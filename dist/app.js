@@ -1,1 +1,0 @@
-!function(){return n="i am run",console.log(n);var n}();

@@ -7,6 +7,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const ModuleNotFoundPlugin = require('react-dev-utils/ModuleNotFoundPlugin');
 const CaseSensitivePathsPlugin = require('case-sensitive-paths-webpack-plugin');
+const CopyPlugin = require('copy-webpack-plugin');
 
 const appDirectory = fs.realpathSync(process.cwd());
 const imageInlineSizeLimit = 10000;
@@ -70,6 +71,9 @@ module.exports = (_, { mode: webpackEnv }) => {
           overlay: true,
         },
         host: '0.0.0.0',
+        devMiddleware: {
+          writeToDisk: true,
+        },
       }) : undefined,
     module: {
       strictExportPresence: true,
@@ -168,8 +172,15 @@ module.exports = (_, { mode: webpackEnv }) => {
     },
     plugins: [
       new HtmlWebpackPlugin({
-        inject: true,
+        inject: 'head',
         template: path.resolve(appDirectory, 'src/index.html'),
+        minify: false,
+        scriptLoading: 'blocking',
+      }),
+      new CopyPlugin({
+        patterns: [
+          { from: path.resolve(appDirectory, 'src/favicons'), to: 'favicons' },
+        ],
       }),
       new ModuleNotFoundPlugin(path.resolve(appDirectory, 'src')),
       isEnvDevelopment && new CaseSensitivePathsPlugin(),
