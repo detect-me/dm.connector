@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "scripts": {
     "build": "cross-env-shell NODE_ENV=production BABEL_ENV=production  webpack --mode=production",
-    "start": "cross-env-shell NODE_ENV=development BABEL_ENV=development webpack serve"
+    "start": "cross-env-shell NODE_ENV=development BABEL_ENV=development webpack serve --mode=development"
   },
   "repository": {
     "type": "git",
@@ -19,6 +19,7 @@
     "babel-loader": "8.2.2",
     "babel-preset-react-app": "10.0.0",
     "case-sensitive-paths-webpack-plugin": "2.4.0",
+    "clean-webpack-plugin": "^4.0.0",
     "copy-webpack-plugin": "9.0.1",
     "cross-env": "7.0.3",
     "css-loader": "6.2.0",
