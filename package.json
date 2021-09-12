@@ -42,6 +42,14 @@
     "webpack-cli": "4.8.0",
     "webpack-dev-server": "4.2.0"
   },
+  "dependencies": {
+    "arch": "2.2.0",
+    "bowser": "2.11.0",
+    "detect-gpu": "3.1.17",
+    "mixpanel-browser": "2.41.0",
+    "mobile-detect": "1.4.5",
+    "recaptcha-v3": "1.10.0"
+  },
   "browserslist": {
     "production": [
       ">0.2%",

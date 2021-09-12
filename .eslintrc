@@ -4,5 +4,9 @@
       "browser": true,
       "node": true,
       "es6": true
+    },
+    "globals": {
+      "__DEV__": true,
+      "__PROD__": true
     }
   }

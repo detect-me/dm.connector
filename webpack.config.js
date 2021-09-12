@@ -1,6 +1,7 @@
 const fs = require('fs');
 const path = require('path');
 
+const webpack = require('webpack');
 const TerserPlugin = require('terser-webpack-plugin');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
@@ -188,6 +189,10 @@ module.exports = (_, { mode: webpackEnv }) => {
         })
       ),
       isEnvProduction && new CleanWebpackPlugin(),
+      new webpack.DefinePlugin({
+        __DEV__: JSON.stringify(isEnvDevelopment),
+        __PROD__: JSON.stringify(isEnvProduction),
+      }),
     ].filter(Boolean),
     performance: false,
   };
