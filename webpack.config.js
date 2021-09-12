@@ -58,6 +58,7 @@ module.exports = (_, { mode: webpackEnv }) => {
               ascii_only: true,
             },
           },
+          extractComments: false,
         }),
         new CssMinimizerPlugin(),
       ],
