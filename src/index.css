@@ -8,6 +8,10 @@
     background-color: #fff;
 }
 
+.dt-screen.hide {
+    display: none;
+}
+
 .dt-spinner {
     display: inline-block;
     position: relative;
