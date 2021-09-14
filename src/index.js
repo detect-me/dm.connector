@@ -19,7 +19,7 @@ const GOOGLE_RECAPTCHA_CLINET_KEY = '6LdGdWAcAAAAAEF35C0ktqSzfA8O1nSxw5W1u3e0';
 
 Promise.allSettled([
   getGPUTier(),
-  loadRecaptch(GOOGLE_RECAPTCHA_CLINET_KEY)
+  loadRecaptch(GOOGLE_RECAPTCHA_CLINET_KEY, { autoHideBadge: true })
     .then(({ recaptcha }) => new Promise((resolve) => recaptcha.ready(() => resolve(recaptcha))))
     .then(({ execute }) => execute()),
   detectIP(),
