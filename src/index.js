@@ -1,5 +1,4 @@
 import Bowser from 'bowser';
-import MobileDetect from 'mobile-detect';
 import { getGPUTier } from 'detect-gpu';
 import arch from 'arch';
 import { load as loadRecaptch } from 'recaptcha-v3';
@@ -7,13 +6,12 @@ import mixpanel from 'mixpanel-browser';
 
 import './index.css';
 
-import detectLocales from './detectLocales';
 import detectIP from './detectIP';
+import getDeviceInformation from './deviceInformation';
 
 const { userAgent } = global.window.navigator;
 
 const browserInfo = Bowser.parse(userAgent);
-const mobileDetect = new MobileDetect(userAgent);
 
 const GOOGLE_RECAPTCHA_CLINET_KEY = '6LdGdWAcAAAAAEF35C0ktqSzfA8O1nSxw5W1u3e0';
 
@@ -27,12 +25,7 @@ Promise.allSettled([
   .then(([gpuChunk, recaptchaChunk, ipChunk]) => {
     const result = {
       ...browserInfo,
-      mobile: {
-        name: mobileDetect.mobile() || mobileDetect.phone(),
-        os: mobileDetect.os(),
-        isBot: mobileDetect.is('bot') || mobileDetect.is('MobileBot'),
-        isDesktopMode: mobileDetect.is('DesktopMode'),
-      },
+      device: getDeviceInformation(),
       cpu: {
         architecture: arch(),
       },
@@ -47,7 +40,6 @@ Promise.allSettled([
         value: recaptchaChunk.value,
       },
       userAgent,
-      locales: detectLocales(),
       ipEntity: {
         error: ipChunk.reason,
         value: ipChunk.value,
@@ -59,7 +51,7 @@ Promise.allSettled([
     }
 
     if (__PROD__) {
-      mixpanel.init('92e1a0bbceac0cee4d87952d33b3db91');
+      mixpanel.init('7c0d9a14a55481b294bf9e636499dd2f');
       mixpanel.track('DT.Connector completed grabbing info by user', result);
     }
   })

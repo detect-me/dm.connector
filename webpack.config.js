@@ -176,6 +176,7 @@ module.exports = (_, { mode: webpackEnv }) => {
         template: path.resolve(appDirectory, 'src/index.html'),
         minify: false,
         scriptLoading: 'blocking',
+        isProd: isEnvProduction,
       }),
       new CopyPlugin({
         patterns: [
