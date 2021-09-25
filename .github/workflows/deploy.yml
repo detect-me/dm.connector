@@ -1,0 +1,32 @@
+name: Deploy app to public repository
+
+on:
+  push:
+    branches: [ master ]
+    
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '12.x'
+          registry-url: 'https://npm.pkg.github.com'
+      - name: setup public repo
+        run: |
+          rm -rf .git
+          git config --global user.email "detectme-tech@gmail.com"
+          git config --global user.name "detectme-tech"
+          git remote add origin git@github.com:detect-me/dm.connector.dist.git
+          git pull origin master
+      - name: build-app
+        run: |
+          npm install
+          npm run build
+      - name: deploy dist
+        run: |
+          git add dist
+          git commit -m 'released $GITHUB_RUN_NUMBER version'
+          git push origin master
+      
