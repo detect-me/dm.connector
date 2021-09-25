@@ -8,5 +8,8 @@
     "globals": {
       "__DEV__": true,
       "__PROD__": true
+    },
+    "rules": {
+      "no-console": 0
     }
   }

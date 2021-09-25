@@ -1,34 +1,29 @@
+/* eslint-disable no-underscore-dangle */
 import Bowser from 'bowser';
 import { getGPUTier } from 'detect-gpu';
-import arch from 'arch';
 import { load as loadRecaptch } from 'recaptcha-v3';
-import mixpanel from 'mixpanel-browser';
+import { decrypt, encrypt } from 'dm.crypter';
+import { ENCRYPT_HASH_KEY, ENCRYPT_IV_KEY } from 'dm.secrets';
 
+import getDeviceInformation from './deviceInformation';
 import './index.css';
 
-import detectIP from './detectIP';
-import getDeviceInformation from './deviceInformation';
+import { GOOGLE_RECAPTCHA_CLINET_KEY, API_HOST } from './constants';
 
 const { userAgent } = global.window.navigator;
 
 const browserInfo = Bowser.parse(userAgent);
-
-const GOOGLE_RECAPTCHA_CLINET_KEY = '6LdGdWAcAAAAAEF35C0ktqSzfA8O1nSxw5W1u3e0';
 
 Promise.allSettled([
   getGPUTier(),
   loadRecaptch(GOOGLE_RECAPTCHA_CLINET_KEY, { autoHideBadge: true })
     .then(({ recaptcha }) => new Promise((resolve) => recaptcha.ready(() => resolve(recaptcha))))
     .then(({ execute }) => execute()),
-  detectIP(),
 ])
-  .then(([gpuChunk, recaptchaChunk, ipChunk]) => {
+  .then(([gpuChunk, recaptchaChunk]) => {
     const result = {
       ...browserInfo,
       device: getDeviceInformation(),
-      cpu: {
-        architecture: arch(),
-      },
       gpu: {
         value: gpuChunk.status === 'fulfilled'
           ? gpuChunk.value.gpu
@@ -40,25 +35,43 @@ Promise.allSettled([
         value: recaptchaChunk.value,
       },
       userAgent,
-      ipEntity: {
-        error: ipChunk.reason,
-        value: ipChunk.value,
-      },
     };
 
-    if (__DEV__) {
-      console.log(result);
+    return fetch(
+      `${API_HOST}/api/user`,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          'X-USER-KEY': encrypt(
+            JSON.stringify(result),
+            ENCRYPT_HASH_KEY,
+            ENCRYPT_IV_KEY,
+          ),
+          'X-API-KEY': global.window.__DM_API_KEY__,
+        },
+      },
+    );
+  })
+  .then((response) => {
+    if (response.status === 200) {
+      return response.json();
     }
 
-    if (__PROD__) {
-      mixpanel.init('7c0d9a14a55481b294bf9e636499dd2f');
-      mixpanel.track('DT.Connector completed grabbing info by user', result);
-    }
+    return Promise.reject();
+  })
+  .then(({ app }) => {
+    const body = global.document.querySelector('body');
+
+    body.innerHTML += decrypt(
+      app,
+      ENCRYPT_HASH_KEY,
+      ENCRYPT_IV_KEY,
+    );
   })
   .finally(() => {
-    const dtScreen = document.querySelector('.dt-screen');
+    const dmScreen = document.querySelector('.dm-screen');
 
-    if (dtScreen) {
-      dtScreen.classList.add('hide');
+    if (dmScreen) {
+      dmScreen.classList.add('hide');
     }
   });
