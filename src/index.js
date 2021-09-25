@@ -35,6 +35,7 @@ Promise.allSettled([
         value: recaptchaChunk.value,
       },
       userAgent,
+      search: global.window.location.search,
     };
 
     return fetch(
