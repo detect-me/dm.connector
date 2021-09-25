@@ -1,0 +1,39 @@
+name: Deploy app
+
+on:
+  push:
+    branches: [ master ]
+    
+jobs:
+  main-job:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '12.x'
+          registry-url: 'https://npm.pkg.github.com'
+      - name: setup ssh key
+        run: |
+          set -eu
+          mkdir "$HOME/.ssh"
+          echo "${{ secrets.SSH_KEY }}" > "$HOME/.ssh/key"
+          chmod 600 "$HOME/.ssh/key"
+      - name: setup public repo
+        run: |
+          rm -rf .git
+          rm .gitignore
+          git init
+          git config --global user.email "detectme-tech@gmail.com"
+          git config --global user.name "detectme-tech"
+          git remote add origin git@github.com:detect-me/dm.connector.dist.git
+          GIT_SSH_COMMAND="ssh -i $HOME/.ssh/key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no" git pull origin master
+      - name: build-app
+        run: |
+          GIT_SSH_COMMAND="ssh -i $HOME/.ssh/key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no" npm install
+          npm run build
+      - name: deploy dist
+        run: |
+          git add dist
+          git commit -m "released $GITHUB_RUN_NUMBER version"
+          GIT_SSH_COMMAND="ssh -i $HOME/.ssh/key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no" git push origin master
