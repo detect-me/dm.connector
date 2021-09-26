@@ -6,7 +6,6 @@ export default () => {
   return {
     colorDepth: client.getColorDepth(),
     resolution: client.getCurrentResolution(),
-    availableResolution: client.getAvailableResolution(),
     plugins: client.getPlugins(),
     fonts: client.getFonts(),
     language: client.getLanguage(),

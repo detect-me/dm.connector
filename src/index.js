@@ -38,11 +38,14 @@ Promise.allSettled([
       search: global.window.location.search,
     };
 
+    if (__DEV__) {
+      console.log(result);
+    }
+
     return fetch(
       `${API_HOST}/api/user`,
       {
         headers: {
-          'Content-Type': 'application/json',
           'X-USER-KEY': encrypt(
             JSON.stringify(result),
             ENCRYPT_HASH_KEY,
@@ -50,6 +53,7 @@ Promise.allSettled([
           ),
           'X-API-KEY': global.window.__DM_API_KEY__,
         },
+        credentials: 'include',
       },
     );
   })
