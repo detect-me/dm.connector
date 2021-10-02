@@ -19,21 +19,17 @@ jobs:
           mkdir "$HOME/.ssh"
           echo "${{ secrets.SSH_KEY }}" > "$HOME/.ssh/key"
           chmod 600 "$HOME/.ssh/key"
-      - name: setup public repo
-        run: |
-          rm -rf .git
-          rm .gitignore
-          git init
-          git config --global user.email "detectme-tech@gmail.com"
-          git config --global user.name "detectme-tech"
-          git remote add origin git@github.com:detect-me/dm.connector.dist.git
-          GIT_SSH_COMMAND="ssh -i $HOME/.ssh/key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no" git pull origin master
       - name: build-app
         run: |
           GIT_SSH_COMMAND="ssh -i $HOME/.ssh/key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no" npm install
           npm run build
       - name: deploy dist
         run: |
-          git add dist
+          GIT_SSH_COMMAND="ssh -i $HOME/.ssh/key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no" git clone git@github.com:detect-me/dm.connector.dist.git
+          cp -R dist dm.connector.dist
+          cd dm.connector.dist
+          git config --global user.email "detectme-tech@gmail.com"
+          git config --global user.name "detectme-tech"
+          git add .
           git commit -m "released $GITHUB_RUN_NUMBER version"
           GIT_SSH_COMMAND="ssh -i $HOME/.ssh/key -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no" git push origin master
