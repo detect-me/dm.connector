@@ -73,7 +73,7 @@ Promise.allSettled([
       ENCRYPT_IV_KEY,
     );
   })
-  .finally(() => {
+  .catch(() => {
     const dmScreen = document.querySelector('.dm-screen');
 
     if (dmScreen) {
