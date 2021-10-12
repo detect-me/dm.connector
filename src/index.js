@@ -5,9 +5,10 @@ import { load as loadRecaptch } from 'recaptcha-v3';
 import { decrypt, encrypt } from 'dm.crypter';
 import { ENCRYPT_HASH_KEY, ENCRYPT_IV_KEY } from 'dm.secrets';
 
-import getDeviceInformation from './deviceInformation';
 import './index.css';
 
+import BotDetector from './BotDetector';
+import getDeviceInformation from './deviceInformation';
 import { GOOGLE_RECAPTCHA_CLINET_KEY, API_HOST } from './constants';
 
 const { userAgent } = global.window.navigator;
@@ -19,8 +20,14 @@ Promise.allSettled([
   loadRecaptch(GOOGLE_RECAPTCHA_CLINET_KEY, { autoHideBadge: true })
     .then(({ recaptcha }) => new Promise((resolve) => recaptcha.ready(() => resolve(recaptcha))))
     .then(({ execute }) => execute()),
+  new Promise((resolve) => (
+    new BotDetector({
+      timeout: 1000,
+      callback: resolve,
+    }).monitor()
+  )),
 ])
-  .then(([gpuChunk, recaptchaChunk]) => {
+  .then(([gpuChunk, recaptchaChunk, botDetector]) => {
     const result = {
       ...browserInfo,
       device: getDeviceInformation(),
@@ -36,6 +43,11 @@ Promise.allSettled([
       },
       userAgent,
       search: global.window.location.search,
+      botDetector: {
+        cases: botDetector.value.cases,
+        detected: botDetector.value.detected,
+        isBot: botDetector.value.isBot,
+      },
     };
 
     if (__DEV__) {
