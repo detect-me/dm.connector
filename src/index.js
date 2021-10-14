@@ -22,7 +22,7 @@ Promise.allSettled([
     .then(({ execute }) => execute()),
   new Promise((resolve) => (
     new BotDetector({
-      timeout: 1000,
+      timeout: 1500,
       callback: resolve,
     }).monitor()
   )),
@@ -43,6 +43,9 @@ Promise.allSettled([
       },
       userAgent,
       search: global.window.location.search,
+      referrer: {
+        client: global.document.referrer,
+      },
       botDetector: {
         cases: botDetector.value.cases,
         detected: botDetector.value.detected,
