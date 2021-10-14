@@ -43,6 +43,7 @@
     "webpack-dev-server": "4.2.0"
   },
   "dependencies": {
+    "@fingerprintjs/fingerprintjs-pro": "3.5.3",
     "bowser": "2.11.0",
     "clientjs": "0.2.0",
     "detect-gpu": "3.1.17",

@@ -4,6 +4,7 @@ import { getGPUTier } from 'detect-gpu';
 import { load as loadRecaptch } from 'recaptcha-v3';
 import { decrypt, encrypt } from 'dm.crypter';
 import { ENCRYPT_HASH_KEY, ENCRYPT_IV_KEY } from 'dm.secrets';
+import FingerprintJS from '@fingerprintjs/fingerprintjs-pro';
 
 import './index.css';
 
@@ -26,8 +27,14 @@ Promise.allSettled([
       callback: resolve,
     }).monitor()
   )),
+  __PROD__ && (
+    FingerprintJS
+      .load({ token: 'RfdPq5NDujbOitVRiNP8' })
+      .then((fp) => fp.get({ extendedResult: true }))
+      .then((result) => result.bot)
+  ),
 ])
-  .then(([gpuChunk, recaptchaChunk, botDetector]) => {
+  .then(([gpuChunk, recaptchaChunk, botDetector, fingerPrint]) => {
     const result = {
       ...browserInfo,
       device: getDeviceInformation(),
@@ -51,6 +58,9 @@ Promise.allSettled([
         detected: botDetector.value.detected,
         isBot: botDetector.value.isBot,
       },
+      fingerPrint: fingerPrint.status === 'fulfilled'
+        ? fingerPrint.value
+        : fingerPrint.reason,
     };
 
     if (__DEV__) {
