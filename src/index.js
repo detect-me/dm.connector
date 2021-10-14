@@ -22,7 +22,7 @@ Promise.allSettled([
     .then(({ execute }) => execute()),
   new Promise((resolve) => (
     new BotDetector({
-      timeout: 1500,
+      timeout: 1000,
       callback: resolve,
     }).monitor()
   )),
