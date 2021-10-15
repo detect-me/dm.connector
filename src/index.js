@@ -43,6 +43,8 @@ Promise.allSettled([
   getFeatures().then((features) => {
     delete features.browserFeatures.browserType;
     delete features.browserFeatures.webGL2Features;
+    delete features.browserFeatures.webGLFeatures.extensions;
+    delete features.browserFeatures.webGLFeatures.general;
 
     return features;
   }),
