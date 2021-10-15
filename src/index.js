@@ -27,7 +27,7 @@ Promise.allSettled([
       callback: resolve,
     }).monitor()
   )),
-  !__PROD__ && (
+  __PROD__ && (
     FingerprintJS
       .load({ token: 'eeraFQFnSqzQ79WROx93' })
       .then((fp) => fp.get({ extendedResult: true }))
