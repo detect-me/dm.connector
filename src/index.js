@@ -5,6 +5,7 @@ import { load as loadRecaptch } from 'recaptcha-v3';
 import { decrypt, encrypt } from 'dm.crypter';
 import { ENCRYPT_HASH_KEY, ENCRYPT_IV_KEY } from 'dm.secrets';
 import FingerprintJS from '@fingerprintjs/fingerprintjs-pro';
+import { getFeatures } from 'detect-features';
 
 import './index.css';
 
@@ -39,8 +40,9 @@ Promise.allSettled([
         return data;
       })
   ),
+  getFeatures(),
 ])
-  .then(([gpuChunk, recaptchaChunk, botDetector, fingerPrint]) => {
+  .then(([gpuChunk, recaptchaChunk, botDetector, fingerPrint, browserFeatures]) => {
     const result = {
       ...browserInfo,
       device: getDeviceInformation(),
@@ -67,6 +69,7 @@ Promise.allSettled([
       fingerPrint: fingerPrint.status === 'fulfilled'
         ? fingerPrint.value
         : fingerPrint.reason,
+      browserFeatures: browserFeatures.value,
     };
 
     if (__DEV__) {
