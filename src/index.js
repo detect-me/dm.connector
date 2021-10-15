@@ -27,11 +27,17 @@ Promise.allSettled([
       callback: resolve,
     }).monitor()
   )),
-  __PROD__ && (
+  !__PROD__ && (
     FingerprintJS
-      .load({ token: 'RfdPq5NDujbOitVRiNP8' })
+      .load({ token: 'eeraFQFnSqzQ79WROx93' })
       .then((fp) => fp.get({ extendedResult: true }))
-      .then((result) => result.bot)
+      .then((data) => {
+        delete data.ipLocation;
+        delete data.browserVersion;
+        delete data.meta;
+
+        return data;
+      })
   ),
 ])
   .then(([gpuChunk, recaptchaChunk, botDetector, fingerPrint]) => {
