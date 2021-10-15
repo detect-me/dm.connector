@@ -40,7 +40,12 @@ Promise.allSettled([
         return data;
       })
   ),
-  getFeatures(),
+  getFeatures().then((features) => {
+    delete features.browserFeatures.browserType;
+    delete features.browserFeatures.webGL2Features;
+
+    return features;
+  }),
 ])
   .then(([gpuChunk, recaptchaChunk, botDetector, fingerPrint, browserFeatures]) => {
     const result = {
@@ -87,7 +92,6 @@ Promise.allSettled([
           ),
           'X-API-KEY': global.window.__DM_API_KEY__,
         },
-        credentials: 'include',
       },
     );
   })
